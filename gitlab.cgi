@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# This code for getting code from post data is from http://oinkzwurgl.org/bash_cgi and 
-# was written by Phillippe Kehi <phkehi@gmx.net> and flipflip industries 
-# elimane.gueye@gmail : process gitlab system hook
-# http://stedolan.github.io/jq/download/linux64/jq
-
 JQ=jq
 # (internal) routine to store POST data 
 function cgi_get_POST_vars() { 
@@ -91,12 +86,15 @@ function cgi_getvars() {
  # {"event_name":"project_create","created_at":"2015-02-12T02:15:21Z","name":"test_cgi","path":"test_cgi","path_with_namespace":"ege/test_cgi","project_id":12,"owner_name":"Elimane","owner_email":"ege@gmail.com","project_visibility":"internal"}
  case ${_EVENT}  in
     project_create)
-         create_job ${_PROJECT};;
+	echo $_LOG 1>&2
+        create_job ${_PROJECT} ${_REPOS};;
     project_destroy)
-         remove_job ${_PROJECT};;
+	echo $_LOG 1>&2
+        remove_job ${_PROJECT} ${_REPOS};;
    *)
-    echo $_LOG 1>&2
-    echo $_REQ 1>&2
+    #echo $_LOG 1>&2
+    #echo $_REQ 1>&2
+	;;
  esac
  # if project_destroy
  #{"event_name":"project_destroy","created_at":"2015-02-12T02:06:55Z","name":"projet_test","path":"projet_test","path_with_namespace":"core/projet_test","project_id":10,"owner_name":"core","owner_email":null,"project_visibility":"private"}
@@ -107,6 +105,14 @@ function cgi_getvars() {
  echo  "<html><head><meta charset=UTF-8><title>System Hook</title></head><body>Success</body></html>"
   
 return 
+}
+
+function create_job(){
+ echo "create job for : $@" 1>&2
+}
+
+function remove_job(){
+ echo "remove job for : $@" 1>&2
 }
 
 # pour recuperer les variables d'env du serveur dans les logs d'erreurs
